@@ -54,6 +54,7 @@ def postData(request):
         food_category = foodlog_entry.get('food_category')
         unix_timestamp = foodlog_entry.get('timestamp')
         type = foodlog_entry.get('type')
+        print(roll_no,food_category,unix_timestamp,type)
 
         if not roll_no or not food_category or not unix_timestamp or not type:
             return Response({'error': 'Each foodlog entry must contain roll_no, food_category, timestamp, and type'}, status=status.HTTP_400_BAD_REQUEST)
