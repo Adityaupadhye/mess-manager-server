@@ -1,7 +1,7 @@
 
 # **Mess Management System API**
 
-### *Efficiently manage hostel mess attendance and food preferences using RFID technology and data analytics*
+### *Efficiently manage hostel mess attendance and food preferences using RFID/QR technology and data analytics*
 
 ## Overview
 
