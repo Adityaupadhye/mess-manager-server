@@ -39,6 +39,11 @@ def getUsers(request):
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def getUsers(request):
+    
+    return Response(status=status.HTTP_200_OK)
+
 @csrf_exempt 
 @api_view(['POST'])
 def postData(request):
