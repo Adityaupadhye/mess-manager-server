@@ -77,4 +77,4 @@ For any queries or feedback, feel free to reach out:
 
 - **Name**: Mohammad Kashif Khan
 - **Email**: kashifkhan@cse.iitb.ac.in
-- **GitHub**: [Your GitHub Profile](https://github.com/silent-learner)
+- **GitHub**: [Silent-Learner](https://github.com/silent-learner)
