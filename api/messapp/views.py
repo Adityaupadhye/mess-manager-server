@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.utils import timezone
+from api.settings import TIME_ZONE
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
@@ -43,6 +44,7 @@ def getUsers(request):
 @api_view(['POST'])
 def postData(request):
     foodlogs_data = request.data.get('foodlogs')
+    print(foodlogs_data)
 
     if not foodlogs_data:
         return Response({'error': 'Request must contain an array of foodlogs'}, status=status.HTTP_400_BAD_REQUEST)
@@ -60,8 +62,8 @@ def postData(request):
             return Response({'error': 'Each foodlog entry must contain roll_no, food_category, timestamp, and type'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            timestamp = datetime.fromtimestamp(unix_timestamp)
-
+            timestamp = datetime.fromtimestamp(unix_timestamp, tz=timezone.get_current_timezone())
+            
             foodlog = FoodLog(
                 roll_no=roll_no,
                 food_category=food_category,
