@@ -6,4 +6,5 @@ urlpatterns = [
     path('login/',views.login),
     path('', views.getUsers),
     path('post/', views.postData),
+    path('weekly/', views.getWeekdata),
 ]
