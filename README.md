@@ -71,15 +71,15 @@ These visualizations are generated as PNG images and sent to the frontend for us
 
 ---
 
-## **Contact**
-
-# Team: 
-    - Mohammad Kashif Khan (24M0770)
+### Team: 
+    *- Mohammad Kashif Khan (24M0770)
     - Mohammad Aasim (24M2118)
-    - Aditya Upadhye (24M0830)
+    - Aditya Upadhye (24M0830)*
+
+## **Contact**
 
 For any queries or feedback, feel free to reach out:
 
 - **Name**: Mohammad Kashif Khan
-- **Email**: kashifkhan@cse.iitb.ac.in
+- **Email**: [](kashifkhan@cse.iitb.ac.in)
 - **GitHub**: [Silent-Learner](https://github.com/silent-learner)

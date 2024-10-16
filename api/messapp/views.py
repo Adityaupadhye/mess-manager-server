@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User, FoodLog
 from .serializers import UserSerializer, FoodLogSerializer
 from rest_framework import status
+from collections import defaultdict , OrderedDict
 
 @csrf_exempt 
 @api_view(['POST'])
@@ -41,9 +42,29 @@ def getUsers(request):
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-def getUsers(request):
-    
-    return Response(status=status.HTTP_200_OK)
+def getWeekdata(request):
+
+    logs = FoodLog.objects.all()
+    serializer = FoodLogSerializer(logs,many=True)
+
+    data = serializer.data
+
+    for obj in data:
+        obj['timestamp'] = obj['timestamp'].split('T')[0]
+
+    weekly_count = defaultdict(lambda: defaultdict(set))
+
+    for entry in data:
+        foodtype = entry['food_category'] 
+        date = entry['timestamp']
+        rollno = entry['roll_no']
+        weekly_count[date][foodtype].add(rollno)
+
+    result = {
+        date: {foodtype: len(rollnos) for foodtype, rollnos in foodtypes.items()} for date, foodtypes in weekly_count.items()
+    }
+        
+    return Response({"result"  : OrderedDict(sorted(result.items()))},status=status.HTTP_200_OK)
 
 @csrf_exempt 
 @api_view(['POST'])
