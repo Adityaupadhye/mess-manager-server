@@ -35,3 +35,21 @@ class FoodLog(models.Model):
 
     def __str__(self):
         return f'{self.roll_no} - {self.food_category} - {self.timestamp}'
+    
+
+class FoodMenu(models.Model):
+
+    FOOD_CATEGORY_CHOICES = [
+        ('breakfast', 'Breakfast'),
+        ('lunch', 'Lunch'),
+        ('snacks', 'Snacks'),
+        ('dinner', 'Dinner'),
+    ]
+
+
+    food_category = models.CharField(max_length=50,choices=FOOD_CATEGORY_CHOICES)
+    date = models.DateField()
+    menu = models.CharField(max_length=150)
+    food_wastage = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+
