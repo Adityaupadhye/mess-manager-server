@@ -117,11 +117,18 @@ def getDayData(request):
     for obj in data:
         obj['timestamp'] = obj['timestamp'].split('T')[0]
 
-    res = dict({'breakfast' : 0, 'lunch' : 0, 'snacks' : 0, 'dinner' :0})
+    day_count = defaultdict(set)
 
     for entry in data:
         foodtype = entry['food_category'] 
-        res[foodtype] += 1
+        rollno = entry['roll_no']
+        day_count[foodtype].add(rollno)
+
+    print(day_count)
+    
+    res = {
+        foodtype : len(rollnos) for foodtype , rollnos in day_count.items()
+    }
         
     return Response({"result"  : res},status=status.HTTP_200_OK)
 
