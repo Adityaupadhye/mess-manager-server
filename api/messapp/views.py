@@ -1,6 +1,5 @@
-from datetime import datetime
+import datetime 
 from django.utils import timezone
-from api.settings import TIME_ZONE
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
@@ -8,63 +7,6 @@ from .models import User, FoodLog
 from .serializers import UserSerializer, FoodLogSerializer
 from rest_framework import status
 from collections import defaultdict , OrderedDict
-
-@csrf_exempt 
-@api_view(['POST'])
-def login(request):
-
-    if not request.data.get('username') or not request.data.get('password'):
-        return Response({"error":"Either password or username not provided!!"},status=status.HTTP_400_BAD_REQUEST)
-    
-    try:
-        user = User.objects.get(pk=request.data.get('username'))
-            
-        if user.password == request.data['password'] :
-            serializer = UserSerializer(user)
-            return Response(serializer.data,status=status.HTTP_200_OK)
-        else: 
-            return Response({'error':"Wrong Credentials!!"},status=status.HTTP_401_UNAUTHORIZED)
-        
-    except User.DoesNotExist:
-        return Response({"error":"User doesn't exists!!"},status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def getUsers(request):
-    hostel = request.query_params.get('hostel')
-    role = request.query_params.get('role')
-    
-    if not role or not hostel:
-        return Response({'error': 'Both role and hostel are required'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    users = User.objects.filter(role=role, hostel=hostel)
-
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data,status=status.HTTP_200_OK)
-
-@api_view(['GET'])
-def getWeekdata(request):
-
-    logs = FoodLog.objects.all()
-    serializer = FoodLogSerializer(logs,many=True)
-
-    data = serializer.data
-
-    for obj in data:
-        obj['timestamp'] = obj['timestamp'].split('T')[0]
-
-    weekly_count = defaultdict(lambda: defaultdict(set))
-
-    for entry in data:
-        foodtype = entry['food_category'] 
-        date = entry['timestamp']
-        rollno = entry['roll_no']
-        weekly_count[date][foodtype].add(rollno)
-
-    result = {
-        date: {foodtype: len(rollnos) for foodtype, rollnos in foodtypes.items()} for date, foodtypes in weekly_count.items()
-    }
-        
-    return Response({"result"  : OrderedDict(sorted(result.items()))},status=status.HTTP_200_OK)
 
 @csrf_exempt 
 @api_view(['POST'])
@@ -104,3 +46,85 @@ def postData(request):
     FoodLog.objects.bulk_create(created_foodlogs)
     
     return Response({"message" : "Logs created successfully!!"}, status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt 
+@api_view(['POST'])
+def login(request):
+
+    if not request.data.get('username') or not request.data.get('password'):
+        return Response({"error":"Either password or username not provided!!"},status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        user = User.objects.get(pk=request.data.get('username'))
+            
+        if user.password == request.data['password'] :
+            serializer = UserSerializer(user)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        else: 
+            return Response({'error':"Wrong Credentials!!"},status=status.HTTP_401_UNAUTHORIZED)
+        
+    except User.DoesNotExist:
+        return Response({"error":"User doesn't exists!!"},status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def getUsers(request):
+    hostel = request.query_params.get('hostel')
+    role = request.query_params.get('role')
+    
+    if not role or not hostel:
+        return Response({'error': 'Both role and hostel are required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    users = User.objects.filter(role=role, hostel=hostel)
+
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getWeekdata(request):
+
+    logs = FoodLog.objects.filter(timestamp__date__gte=(timezone.now() - datetime.timedelta(7)))
+    serializer = FoodLogSerializer(logs,many=True) 
+
+    data = serializer.data
+
+    for obj in data:
+        obj['timestamp'] = obj['timestamp'].split('T')[0]
+
+    weekly_count = defaultdict(lambda: defaultdict(set))
+
+    for entry in data:
+        foodtype = entry['food_category'] 
+        date = entry['timestamp']
+        rollno = entry['roll_no']
+        weekly_count[date][foodtype].add(rollno)
+
+    result = {
+        date: {foodtype: len(rollnos) for foodtype, rollnos in foodtypes.items()} for date, foodtypes in weekly_count.items()
+    }
+        
+    return Response({"result"  : OrderedDict(sorted(result.items()))},status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getDayData(request):
+    date = datetime.datetime.strptime(request.query_params.get('date'),'%d-%m-%Y')
+    date = datetime.datetime.strftime(date,'%Y-%m-%d')
+    logs = FoodLog.objects.filter(timestamp__date = date)
+    serializer = FoodLogSerializer(logs,many=True) 
+
+    data = serializer.data
+    
+    for obj in data:
+        obj['timestamp'] = obj['timestamp'].split('T')[0]
+
+    res = dict({'breakfast' : 0, 'lunch' : 0, 'snacks' : 0, 'dinner' :0})
+
+    for entry in data:
+        foodtype = entry['food_category'] 
+        res[foodtype] += 1
+        
+    return Response({"result"  : res},status=status.HTTP_200_OK)
+
+
+
+
