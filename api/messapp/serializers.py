@@ -15,3 +15,8 @@ class FoodMenuSerializer(serializers.ModelSerializer):
     class Meta:
         model=FoodMenu 
         fields = '__all__'
+
+class FoodWastageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=FoodMenu
+        fields=('food_category', 'food_wastage', 'date')
