@@ -86,7 +86,7 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mess_manager_prod',
+        'NAME': 'mess_manager',
         'USER': 'root',
         'PASSWORD': 'manager',
         'HOST': '10.129.131.148',  # Or the IP address of your MySQL server
