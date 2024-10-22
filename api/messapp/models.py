@@ -52,4 +52,9 @@ class FoodMenu(models.Model):
     menu = models.CharField(max_length=150)
     food_wastage = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['date', 'food_category'], name='unique_date_category')
+        ]
+
 

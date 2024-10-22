@@ -1,3 +1,4 @@
+from collections import defaultdict
 import datetime
 from rest_framework import viewsets
 from messapp.models import FoodMenu
@@ -75,6 +76,19 @@ class FoodMenuViewSet(viewsets.ModelViewSet):
                 "error": "No food menus found in the last 7 days.",
                 "data": []
             }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Group data by date
+        grouped_data = defaultdict(list)
+        for entry in last_seven_days_data:
+
+            date_str = str(entry.date)
+            grouped_data[date_str].append({
+                'food_wastage': entry.food_wastage,
+                'food_category': entry.food_category
+            })
+
+        # Sort the grouped data by date
+        sorted_grouped_data = dict(sorted(grouped_data.items()))
 
         # Serialize the filtered queryset
         wastage_serializer = FoodWastageSerializer(last_seven_days_data, many=True)
@@ -83,7 +97,7 @@ class FoodMenuViewSet(viewsets.ModelViewSet):
 
         return Response({
             "status_code": status.HTTP_200_OK,
-            "data": wastage_serializer.data,
+            "data": sorted_grouped_data,
             "error": None 
         }, status=status.HTTP_200_OK)
     
