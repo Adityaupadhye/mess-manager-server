@@ -13,14 +13,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-password: ${{ secrets.DEV_SERVER_PASSWORD }}
-          ssh-user: ${{ secrets.DEV_SERVER_USER }}
-          ssh-host: ${{ secrets.DEV_SERVER_IP }}
-        env:
-          SSH_KNOWN_HOSTS: ${{ secrets.DEV_SERVER_IP }}
+      - name: Install sshpass
+        run: sudo apt install -y sshpass
+
+      # - name: Set up SSH
+      #   uses: webfactory/ssh-agent@v0.5.3
+      #   with:
+      #     ssh-password: ${{ secrets.DEV_SERVER_PASSWORD }}
+      #     ssh-user: ${{ secrets.DEV_SERVER_USER }}
+      #     ssh-host: ${{ secrets.DEV_SERVER_IP }}
+      #   env:
+      #     SSH_KNOWN_HOSTS: ${{ secrets.DEV_SERVER_IP }}
 
     #   - name: Build Docker image
     #     run: |
