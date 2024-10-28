@@ -1,4 +1,4 @@
-import datetime 
+from datetime import datetime as dt, timedelta 
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -30,7 +30,7 @@ def postData(request):
             return Response({'error': 'Each foodlog entry must contain roll_no, food_category, timestamp, and type'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            timestamp = datetime.fromtimestamp(unix_timestamp, tz=timezone.get_current_timezone())
+            timestamp = dt.fromtimestamp(unix_timestamp, tz=timezone.get_current_timezone())
             
             foodlog = FoodLog(
                 roll_no=roll_no,
@@ -83,7 +83,7 @@ def getUsers(request):
 @api_view(['GET'])
 def getWeekdata(request):
 
-    logs = FoodLog.objects.filter(timestamp__date__gte=(timezone.now() - datetime.timedelta(7)))
+    logs = FoodLog.objects.filter(timestamp__date__gte=(timezone.now() - timedelta(7)))
     serializer = FoodLogSerializer(logs,many=True) 
 
     data = serializer.data
@@ -107,8 +107,8 @@ def getWeekdata(request):
 
 @api_view(['GET'])
 def getDayData(request):
-    date = datetime.datetime.strptime(request.query_params.get('date'),'%d-%m-%Y')
-    date = datetime.datetime.strftime(date,'%Y-%m-%d')
+    date = dt.strptime(request.query_params.get('date'),'%d-%m-%Y')
+    date = dt.strftime(date,'%Y-%m-%d')
     logs = FoodLog.objects.filter(timestamp__date = date)
     serializer = FoodLogSerializer(logs,many=True) 
 
