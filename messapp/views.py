@@ -30,7 +30,7 @@ def postData(request):
             return Response({'error': 'Each foodlog entry must contain roll_no, food_category, timestamp, and type'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            timestamp = dt.fromtimestamp(unix_timestamp, tz=timezone.get_current_timezone())
+            timestamp = dt.fromtimestamp(unix_timestamp)
             
             foodlog = FoodLog(
                 roll_no=roll_no,
