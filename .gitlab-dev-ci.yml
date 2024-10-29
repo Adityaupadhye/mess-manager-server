@@ -5,25 +5,18 @@ deploy:
   stage: deploy
   image: ubuntu:latest
 
-  before_script:
-    # Install sshpass for password-based SSH
-    - apt-get update && apt-get install -y sshpass
-
   script:
-    # SSH into the dev server and run Docker commands
-    - sshpass -p "${DEV_SERVER_PASSWORD}" ssh -o StrictHostKeyChecking=no ${DEV_SERVER_USER}@${DEV_SERVER_IP} <<EOF
-        docker stop mess_app_container || true
-        docker rm mess_app_container || true
-        cd /path/to/your/app
-        docker build -t mess_app_django:latest .
-        docker run -d --name mess_app_container -p 8080:8080 mess_app_django:latest
-      EOF
+    # Start deployment on the server
+    - echo "Starting deployment..."
+    - docker stop mess_app_container || true
+    - docker rm mess_app_container || true
+    - cd $CI_PROJECT_DIR  # Change to the directory where your app is located
+    - docker build -t mess_app_django:latest .
+    - docker run -d --name mess_app_container -p 8080:8080 mess_app_django:latest
 
-  # Run only on the `dev` branch
   only:
     - dev
 
-  # Define environment variables as GitLab CI/CD variables
+  # Optional: Define any environment variables you need
   variables:
-    SERVER_IP: ${DEV_SERVER_IP}
-    SERVER_USER: ${DEV_SERVER_USER}
+    # Define any other environment variables needed for your deployment
