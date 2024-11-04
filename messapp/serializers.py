@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 class FoodLogSerializer(serializers.ModelSerializer):
     class Meta:
         model=FoodLog 
-        fields=('type','roll_no','food_category','timestamp')
+        fields='__all__'
 
 class FoodMenuSerializer(serializers.ModelSerializer):
     class Meta:

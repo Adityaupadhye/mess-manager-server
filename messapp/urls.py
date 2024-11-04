@@ -12,6 +12,7 @@ urlpatterns = [
     path('', views.getUsers),
     path('post/', views.postData),
     path('weekly/', views.getWeekdata),
+    path('monthly/', views.getMontlyAverage),
     path('pie/', views.getDayData),
     path('menu/', include(router.urls))
 ]

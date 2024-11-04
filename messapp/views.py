@@ -1,5 +1,6 @@
 from datetime import datetime as dt, timedelta 
 from django.utils import timezone
+from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
@@ -7,6 +8,8 @@ from .models import User, FoodLog
 from .serializers import UserSerializer, FoodLogSerializer
 from rest_framework import status
 from collections import defaultdict , OrderedDict
+from django.db.models import Avg
+from django.db.models.functions import TruncDate
 
 @csrf_exempt 
 @api_view(['POST'])
@@ -51,7 +54,6 @@ def postData(request):
 @csrf_exempt 
 @api_view(['POST'])
 def login(request):
-
     if not request.data.get('username') or not request.data.get('password'):
         return Response({"error":"Either password or username not provided!!"},status=status.HTTP_400_BAD_REQUEST)
     
@@ -132,6 +134,17 @@ def getDayData(request):
         
     return Response({"result"  : res},status=status.HTTP_200_OK)
 
+@api_view(["GET"])
+def getMontlyAverage(request):
+    today = dt.now()
+    first_day_of_this_month = today.replace(day=1)
+    print(first_day_of_this_month,today)
+    # data = FoodLog.objects.filter(timestamp__date__range=(first_day_of_this_month, today)).annotate(day=TruncDate('timestamp'))
+    data = FoodLog.objects.all().annotate(date=TruncDate('timestamp')).values('date').annotate(average=Count('roll_no')/4)
+    # print(data)
+    # res = FoodLogSerializer(data,many=True).data
+    return Response({"data":data},status=status.HTTP_200_OK)
 
+ 
 
 

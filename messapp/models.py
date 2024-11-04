@@ -34,7 +34,10 @@ class FoodLog(models.Model):
     timestamp = models.DateTimeField()
 
     def __str__(self):
-        return f'{self.roll_no} - {self.food_category} - {self.timestamp}'
+        field_values = []
+        for field in self._meta.get_fields():
+            field_values.append(str(getattr(self, field.name, '')))
+        return ' '.join(field_values)
     
 
 class FoodMenu(models.Model):
