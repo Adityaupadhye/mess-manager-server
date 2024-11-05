@@ -139,11 +139,9 @@ def getMontlyAverage(request):
     today = dt.now()
     first_day_of_this_month = today.replace(day=1)
     print(first_day_of_this_month,today)
-    data = FoodLog.objects.filter(timestamp__date__range=(first_day_of_this_month, today)).annotate(day=TruncDate('timestamp'))
-    # data = FoodLog.objects.all().annotate(date=TruncDate('timestamp')).values('date').annotate(average=Count('roll_no')/4)
-    # print(data)
-    res = FoodLogSerializer(data,many=True).data
-    return Response({"data":res},status=status.HTTP_200_OK)
+    data = FoodLog.objects.filter(timestamp__date__range=(first_day_of_this_month, today)).annotate(date=TruncDate('timestamp')).values('date').annotate(average=Count('roll_no')/4)
+    print(data)
+    return Response({"data":data},status=status.HTTP_200_OK)
 
  
 
