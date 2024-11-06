@@ -4,11 +4,14 @@ from rest_framework import status
 from rest_framework import viewsets
 from messapp.models import MessRebates
 from messapp.serializers import MessRebateSerializer
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class MessRebateViewSet(viewsets.ModelViewSet):
     queryset = MessRebates.objects.all()
     serializer_class = MessRebateSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['start_date', 'end_date', 'status', 'hostel', 'roll_no']
 
     @action(detail=False, methods=['get'], url_path='past_rebates')
     def search_past_rebates(self, request):
