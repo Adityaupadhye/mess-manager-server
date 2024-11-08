@@ -16,7 +16,7 @@ docker build -t mess_app .
 docker run -d \
  -p 8080:8080 \
  --name mess_app_server \
- --restart unless-stopped
+ --restart unless-stopped \
  mess_app
 
 # run the mysql container if not running
