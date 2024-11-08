@@ -8,11 +8,12 @@ deploy:
   script:
     # Start deployment on the server
     - echo "Starting deployment..."
-    - docker stop mess_app_container || true
-    - docker rm mess_app_container || true
-    - cd $CI_PROJECT_DIR  # Change to the directory where your app is located
-    - docker build -t mess_app_django:latest .
-    - docker run -d --name mess_app_container -p 8080:8080 mess_app_django:latest
+    # - docker stop mess_app_container || true
+    # - docker rm mess_app_container || true
+    # - cd $CI_PROJECT_DIR  # Change to the directory where your app is located
+    # - docker build -t mess_app_django:latest .
+    # - docker run -d --name mess_app_container -p 8080:8080 mess_app_django:latest
+    - ./deploy.dev.sh
 
   only:
     - dev

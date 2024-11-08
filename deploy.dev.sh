@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ~/Academics/cs699/mess-manager-server
+cd $CI_PROJECT_DIR
 
 # stop and remove existing container
 docker stop mess_app_server || true
@@ -13,7 +13,11 @@ docker rmi mess_app || true
 docker build -t mess_app .
 
 # run new container
-docker run -d -p 8080:8080 --name mess_app_server mess_app
+docker run -d \
+ -p 8080:8080 \
+ --name mess_app_server \
+ --restart unless-stopped
+ mess_app
 
 # run the mysql container if not running
 mysql_container_name="mess_manager_mysql"
@@ -27,6 +31,7 @@ else
     -e MYSQL_ROOT_PASSWORD=manager \
     -v mess_manager_data:/var/lib/mysql \
     -p 3306:3306 \
+    --restart unless-stopped \
     mysql:latest
 
 fi
