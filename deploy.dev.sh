@@ -19,6 +19,9 @@ docker run -d \
  --restart unless-stopped \
  mess_app
 
+# setup django crontabs
+docker exec mess_app_server sh -c "python3 manage.py crontab add &" || true
+
 # run the mysql container if not running
 mysql_container_name="mess_manager_mysql"
 

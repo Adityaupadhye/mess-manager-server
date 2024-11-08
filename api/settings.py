@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'sslserver',
-    'django_filters'
+    'django_filters',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,12 @@ MIDDLEWARE = [
       'corsheaders.middleware.CorsMiddleware',
 
 ]
+
+CRONJOBS = [
+    ('0 2 * * *', 'django.core.management.call_command', ['activate_rebates']),
+    ('0 2 * * *', 'django.core.management.call_command', ['expire_rebates']),
+]
+
 
 ROOT_URLCONF = 'api.urls'
 
