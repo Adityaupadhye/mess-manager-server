@@ -94,8 +94,3 @@ class MessRebates(TimeStampedModel):
         ]
     )
 
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['roll_no', 'status'], name='unique_roll_status')
-        ]

@@ -13,6 +13,26 @@ class MessRebateViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['start_date', 'end_date', 'status', 'hostel', 'roll_no']
 
+    def create(self, request, *args, **kwargs):
+        try:
+            roll_no = request.data.get("roll_no")
+            status_pending = "pending"
+
+            # Check if a rebate with the same roll_no and status 'pending' already exists
+            if MessRebates.objects.filter(roll_no=roll_no, status=status_pending).exists():
+                return Response({
+                    "error": f'A pending rebate already exists for roll number {roll_no}.',
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print(e)
+            return Response({
+                    "error": "Please try again later",
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Call the default `create` implementation if the custom check passes
+        return super().create(request, *args, **kwargs)
+
     @action(detail=False, methods=['get'], url_path='past_rebates')
     def search_past_rebates(self, request):
         # Retrieve query parameters from the URL
