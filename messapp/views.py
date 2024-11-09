@@ -1,5 +1,6 @@
-import datetime 
+from datetime import datetime as dt, timedelta 
 from django.utils import timezone
+from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
@@ -7,6 +8,8 @@ from .models import User, FoodLog
 from .serializers import UserSerializer, FoodLogSerializer
 from rest_framework import status
 from collections import defaultdict , OrderedDict
+from django.db.models import Avg
+from django.db.models.functions import TruncDate
 
 @csrf_exempt 
 @api_view(['POST'])
@@ -30,7 +33,7 @@ def postData(request):
             return Response({'error': 'Each foodlog entry must contain roll_no, food_category, timestamp, and type'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            timestamp = datetime.fromtimestamp(unix_timestamp, tz=timezone.get_current_timezone())
+            timestamp = dt.fromtimestamp(unix_timestamp)
             
             foodlog = FoodLog(
                 roll_no=roll_no,
@@ -51,7 +54,6 @@ def postData(request):
 @csrf_exempt 
 @api_view(['POST'])
 def login(request):
-
     if not request.data.get('username') or not request.data.get('password'):
         return Response({"error":"Either password or username not provided!!"},status=status.HTTP_400_BAD_REQUEST)
     
@@ -83,7 +85,7 @@ def getUsers(request):
 @api_view(['GET'])
 def getWeekdata(request):
 
-    logs = FoodLog.objects.filter(timestamp__date__gte=(timezone.now() - datetime.timedelta(7)))
+    logs = FoodLog.objects.filter(timestamp__date__gte=(timezone.now() - timedelta(7)))
     serializer = FoodLogSerializer(logs,many=True) 
 
     data = serializer.data
@@ -107,8 +109,8 @@ def getWeekdata(request):
 
 @api_view(['GET'])
 def getDayData(request):
-    date = datetime.datetime.strptime(request.query_params.get('date'),'%d-%m-%Y')
-    date = datetime.datetime.strftime(date,'%Y-%m-%d')
+    date = dt.strptime(request.query_params.get('date'),'%d-%m-%Y')
+    date = dt.strftime(date,'%Y-%m-%d')
     logs = FoodLog.objects.filter(timestamp__date = date)
     serializer = FoodLogSerializer(logs,many=True) 
 
@@ -132,6 +134,15 @@ def getDayData(request):
         
     return Response({"result"  : res},status=status.HTTP_200_OK)
 
+@api_view(["GET"])
+def getMontlyAverage(request):
+    today = dt.now()
+    first_day_of_this_month = today.replace(day=1)
+    print(first_day_of_this_month,today)
+    data = FoodLog.objects.filter(timestamp__date__range=(first_day_of_this_month, today)).annotate(date=TruncDate('timestamp')).values('date').annotate(average=Count('roll_no')/4)
+    print(data)
+    return Response({"data":data},status=status.HTTP_200_OK)
 
+ 
 
 

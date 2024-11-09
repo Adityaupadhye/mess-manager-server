@@ -1,4 +1,14 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.forms import ValidationError
+
+class TimeStampedModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
 
 class User(models.Model):
     ROLE_CHOICES = [
@@ -34,7 +44,10 @@ class FoodLog(models.Model):
     timestamp = models.DateTimeField()
 
     def __str__(self):
-        return f'{self.roll_no} - {self.food_category} - {self.timestamp}'
+        field_values = []
+        for field in self._meta.get_fields():
+            field_values.append(str(getattr(self, field.name, '')))
+        return ' '.join(field_values)
     
 
 class FoodMenu(models.Model):
@@ -57,4 +70,27 @@ class FoodMenu(models.Model):
             models.UniqueConstraint(fields=['date', 'food_category'], name='unique_date_category')
         ]
 
+
+class MessRebates(TimeStampedModel):
+
+    REBATE_STATUS_OPTIONS = [
+        ('pending', 'pending'), # student has requested but not yet approved
+        ('inactive', 'inactive'), # approved but start date not reached yet
+        ('active', 'active'), # today's date is between start and end
+        ('expired', 'expired'), # today's date greater than end date
+        ('rejected', 'rejected') # manager rejects the request (entry to be deleted)
+    ]
+
+    hostel = models.CharField(max_length=30, default='', null=False)
+    roll_no = models.CharField(max_length=20, unique=False, null=False)
+    status = models.CharField(max_length=20, choices=REBATE_STATUS_OPTIONS, default='pending')
+    start_date = models.DateField(null=False)
+    end_date = models.DateField(null=False)
+    duration = models.IntegerField(
+        editable=True,
+        validators=[
+            MinValueValidator(2, message='Minimum Rebate days is 2'),
+            MaxValueValidator(15, message='Maximum Rebate days is 15')
+        ]
+    )
 

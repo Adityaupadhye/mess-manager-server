@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FoodMenu, User,FoodLog
+from .models import FoodMenu, MessRebates, User,FoodLog
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 class FoodLogSerializer(serializers.ModelSerializer):
     class Meta:
         model=FoodLog 
-        fields=('type','roll_no','food_category','timestamp')
+        fields='__all__'
 
 class FoodMenuSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,3 +20,9 @@ class FoodWastageSerializer(serializers.ModelSerializer):
     class Meta:
         model=FoodMenu
         fields=('food_category', 'food_wastage', 'date')
+
+
+class MessRebateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=MessRebates 
+        fields = '__all__'

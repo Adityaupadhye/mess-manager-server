@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'messapp',
     'rest_framework',
     'corsheaders',
-    'sslserver'
+    'sslserver',
+    'django_filters',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -55,6 +57,12 @@ MIDDLEWARE = [
       'corsheaders.middleware.CorsMiddleware',
 
 ]
+
+CRONJOBS = [
+    ('0 2 * * *', 'django.core.management.call_command', ['activate_rebates']),
+    ('0 2 * * *', 'django.core.management.call_command', ['expire_rebates']),
+]
+
 
 ROOT_URLCONF = 'api.urls'
 
@@ -113,6 +121,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Rest framework options
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 
 # Internationalization

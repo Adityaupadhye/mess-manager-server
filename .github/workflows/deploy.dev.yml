@@ -1,0 +1,42 @@
+name: Deploy mess-manager-server django app to dev server
+
+on:
+  push:
+    branches:
+      - dev  # Trigger deployment on push to dev branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install sshpass
+        run: sudo apt install -y sshpass
+
+      # - name: Set up SSH
+      #   uses: webfactory/ssh-agent@v0.5.3
+      #   with:
+      #     ssh-password: ${{ secrets.DEV_SERVER_PASSWORD }}
+      #     ssh-user: ${{ secrets.DEV_SERVER_USER }}
+      #     ssh-host: ${{ secrets.DEV_SERVER_IP }}
+      #   env:
+      #     SSH_KNOWN_HOSTS: ${{ secrets.DEV_SERVER_IP }}
+
+    #   - name: Build Docker image
+    #     run: |
+    #       docker build -t mess_app_django:latest .
+
+      - name: Deploy Docker container on Dev Server
+        env:
+          SERVER_IP: ${{ secrets.DEV_SERVER_IP }}
+          SERVER_USER: ${{ secrets.DEV_SERVER_USER }}
+        run: |
+          sshpass -p "${{ secrets.DEV_SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP <<EOF
+            docker stop mess_app_container || true
+            docker rm mess_app_container || true
+            docker build -t mess_app_django:latest .
+            docker run -d --name mess_app_container -p 8080:8080 mess_app_django:latest
+          EOF

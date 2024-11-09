@@ -10,12 +10,15 @@ from rest_framework import status
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.db.models import Avg
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 
 class FoodMenuViewSet(viewsets.ModelViewSet):
     queryset = FoodMenu.objects.all()
     serializer_class = FoodMenuSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['date', 'food_category']
 
     @action(detail=False, methods=['get'])
     def search_by_date(self, request):
