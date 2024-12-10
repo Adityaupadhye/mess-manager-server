@@ -1,27 +1,31 @@
 #!/bin/bash
 
-# stop and remove existing container
+# Setup the env variables
+set -a
+source ~/mess_manager/env/.env
+set +a
+
+# Stop and remove existing container
 docker stop mess_app_server || true
 docker rm mess_app_server || true
 
-# delete existing image
-docker rmi mess_app || true
+# Delete existing image
+docker rmi adityaupadhye/mess-manager-server:latest || true
 
-echo "docker cleanup done. Building new image"
+echo "Docker cleanup done. Pulling new image from Docker Hub..."
 
-# create new image
-docker build -t mess_app .
+# Pull the latest image from Docker Hub
+docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+docker pull adityaupadhye/mess-manager-server:latest
 
-echo "New docker image ready"
-
-# run new container
+# Run the new container
 docker run -d \
  -p 8080:8080 \
  --name mess_app_server \
  --restart unless-stopped \
- mess_app
+ adityaupadhye/mess-manager-server:latest
 
-echo "Docker container `mess_app_server` up and running..."
+echo "Docker container 'mess_app_server' up and running..."
 
-# setup django crontabs
+# Setup Django crontabs
 docker exec mess_app_server sh -c "python3 manage.py crontab add &"
