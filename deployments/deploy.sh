@@ -23,6 +23,8 @@ docker run -d \
  -p 8080:8080 \
  --name mess_app_server \
  --restart unless-stopped \
+ --env-file ~/mess_manager/env/.env \
+ -v ~/mess_manager/env/.env:/app/.env \
  adityaupadhye/mess-manager-server:latest
 
 echo "Docker container 'mess_app_server' up and running..."

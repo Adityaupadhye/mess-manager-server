@@ -10,3 +10,4 @@ sqlparse==0.5.1
 django-filter
 cryptography
 django-crontab
+python-dotenv
