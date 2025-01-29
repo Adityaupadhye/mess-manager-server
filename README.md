@@ -72,9 +72,9 @@ These visualizations are generated as PNG images and sent to the frontend for us
 ---
 
 ### Team: 
-    *- Mohammad Kashif Khan (24M0770)
+    - Mohammad Kashif Khan (24M0770)
     - Mohammad Aasim (24M2118)
-    - Aditya Upadhye (24M0830)*
+    - Aditya Upadhye (24M0830)
 
 ## **Contact**
 
