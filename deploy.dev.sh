@@ -14,6 +14,11 @@ docker build -t mess_app .
 
 # run new container
 docker run -d \
+ -e DB_NAME=$DB_NAME \
+ -e DB_USER=$DB_USER \
+ -e DB_PASSWORD=$DB_PASSWORD \
+ -e DB_HOST=$DB_HOST \
+ -e DB_PORT=$DB_PORT \
  -p 8080:8080 \
  --name mess_app_server \
  --restart unless-stopped \
