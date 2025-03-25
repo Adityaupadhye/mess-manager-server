@@ -2,7 +2,7 @@ from datetime import datetime as dt, timedelta
 from django.utils import timezone
 from django.db.models import Count
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from django.views.decorators.csrf import csrf_exempt
 from .models import User, FoodLog
 from .serializers import UserSerializer, FoodLogSerializer
@@ -10,6 +10,7 @@ from rest_framework import status
 from collections import defaultdict , OrderedDict
 from django.db.models import Avg
 from django.db.models.functions import TruncDate
+from rest_framework.parsers import MultiPartParser, FormParser
 
 @csrf_exempt 
 @api_view(['POST'])
@@ -150,5 +151,34 @@ def getMontlyAverage(request):
     return Response({"data":data},status=status.HTTP_200_OK)
 
  
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+def create_user(request):
+    username = request.data.get('username')
+    name = request.data.get('name')
+    password = request.data.get('password')
+    hostel = request.data.get('hostel')
+    roll_no = request.data.get('roll_no')
+    role = request.data.get('role', 'student')
+    profile_photo = request.FILES.get('profile_photo')
 
+    # Check required fields
+    if not (username and name and password and roll_no):
+        return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.create(
+            username=username,
+            name=name,
+            password=password,
+            hostel=hostel,
+            roll_no=roll_no,
+            role=role,
+            profile_photo=profile_photo
+        )
+        return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

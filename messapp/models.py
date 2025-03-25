@@ -10,6 +10,11 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+def user_profile_photo_path(instance, filename):
+    # Store images in 'profile_photos/<username>/' directory
+    extension = filename.split('.')[-1]
+    return f"profile_photos/{instance.username}/profile.{extension}"
+
 class User(models.Model):
     ROLE_CHOICES = [
         ('student', 'Student'),
@@ -23,6 +28,15 @@ class User(models.Model):
     hostel = models.CharField(max_length=50, blank=True, null=True)
     roll_no = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
+
+    profile_photo = models.ImageField(upload_to=user_profile_photo_path, blank=True, null=True)
+
+    def delete(self, *args, **kwargs):
+        # Delete the profile photo when the user is deleted
+        if self.profile_photo:
+            if os.path.isfile(self.profile_photo.path):
+                os.remove(self.profile_photo.path)
+        super().delete(*args, **kwargs)
 
 class FoodLog(models.Model):
     FOOD_CATEGORY_CHOICES = [

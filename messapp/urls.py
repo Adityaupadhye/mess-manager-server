@@ -12,6 +12,7 @@ router.register(r'foodmenu', FoodMenuViewSet)
 router.register(r'rebates', MessRebateViewSet)
 
 urlpatterns = [
+    path("signup/", views.create_user,),
     path('login/',views.login),
     path('', views.getUsers),
     path('post/', views.postData),
