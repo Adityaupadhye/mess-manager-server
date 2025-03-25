@@ -34,11 +34,17 @@ def postData(request):
 
         try:
             timestamp = dt.fromtimestamp(unix_timestamp)
+
+            # Extract date and time
+            log_date = timestamp.date()
+            log_time = timestamp.time()
             
             foodlog = FoodLog(
                 roll_no=roll_no,
                 food_category=food_category,
                 timestamp=timestamp,
+                date=log_date,
+                time=log_time,
                 type=type
             )
             created_foodlogs.append(foodlog)
