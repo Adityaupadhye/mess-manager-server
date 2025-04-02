@@ -1,9 +1,12 @@
-from datetime import datetime as dt, timedelta 
+from datetime import datetime as dt, timedelta
+import threading 
 from django.utils import timezone
 from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, parser_classes
 from django.views.decorators.csrf import csrf_exempt
+
+from messapp.tasks import process_foodlogs_sync
 from .models import User, FoodLog
 from .serializers import UserSerializer, FoodLogSerializer
 from rest_framework import status
@@ -57,6 +60,20 @@ def postData(request):
     
     return Response({"message" : "Logs created successfully!!"}, status=status.HTTP_201_CREATED)
 
+
+@api_view(['POST'])
+def process_foodlogs(request):
+    foodlogs_data = request.data.get('foodlogs', [])
+    if not foodlogs_data:
+        return Response({'error': 'foodlogs array is required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Start the background task in a new thread
+    thread = threading.Thread(target=process_foodlogs_sync, args=(foodlogs_data,))
+    thread.start()
+
+    return Response({
+        'message': 'Processing started'
+    }, status=status.HTTP_202_ACCEPTED)
 
 @csrf_exempt 
 @api_view(['POST'])

@@ -16,6 +16,7 @@ urlpatterns = [
     path('login/',views.login),
     path('', views.getUsers),
     path('post/', views.postData),
+    path('foodlogs/', views.process_foodlogs),
     path('weekly/', views.getWeekdata),
     path('monthly/', views.getMontlyAverage),
     path('pie/', views.getDayData),

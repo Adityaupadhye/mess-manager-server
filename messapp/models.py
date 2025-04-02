@@ -1,3 +1,4 @@
+from time import localtime
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.forms import ValidationError
@@ -61,11 +62,21 @@ class FoodLog(models.Model):
     date = models.DateField(null=True, blank=True)  # New column for date
     time = models.TimeField(null=True, blank=True)  # New column for time
 
+    def save(self, *args, **kwargs):
+        if self.timestamp:
+            local_timestamp = localtime(self.timestamp)
+            self.date = local_timestamp.date()
+            self.time = local_timestamp.time()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         field_values = []
         for field in self._meta.get_fields():
             field_values.append(str(getattr(self, field.name, '')))
         return ' '.join(field_values)
+    
+    class Meta:
+        unique_together = ('roll_no', 'food_category', 'date')
     
 
 class FoodMenu(models.Model):

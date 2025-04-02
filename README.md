@@ -11,6 +11,31 @@ This project integrates **data analytics** and **visualization** to ensure seaml
 
 ---
 
+## Setup
+
+Clone this repository
+`git clone https://github.com/Adityaupadhye/mess-manager-server.git`
+
+Setup python virtual environment
+```
+mkdir -p ~/.virtualenvs/
+python -m venv  ~/.virtualenvs/mess-app-dev
+source ~/.virtualenvs/mess-app-dev/bin/activate
+pip install -r requirements.txt
+```
+
+Setup a mysql database (local or hosted)
+
+Set up environment variables
+```
+cp .env.example .env
+```
+
+Update values in `.env` according to your database connection details
+
+
+---
+
 ## **Key Features**
 
 - **Student RFID/QR Integration**: Records student attendance for meals in real-time using RFID technology.
