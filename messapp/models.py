@@ -48,6 +48,14 @@ class FoodLog(models.Model):
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["roll_no", "food_category", "date"],
+                name="unique_roll_food_date" # ensures one person can take only one meal of a category per day
+            )
+        ]
+
     def __str__(self):
         field_values = []
         for field in self._meta.get_fields():

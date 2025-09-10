@@ -33,20 +33,32 @@ def postData(request):
             return Response({'error': 'Each foodlog entry must contain roll_no, food_category, timestamp, and type'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            # Convert unix_timestamp (seconds since epoch) to a datetime object
             timestamp = dt.fromtimestamp(unix_timestamp)
-            
+
+            # If FoodLog has separate date and time fields, extract them:
+            date_field = timestamp.date()
+            time_field = timestamp.time()
+
             foodlog = FoodLog(
                 roll_no=roll_no,
                 food_category=food_category,
-                timestamp=timestamp,
-                type=type
+                timestamp=timestamp,  # For DateTimeField
+                type=type,
+                date=date_field,
+                time=time_field,
             )
             created_foodlogs.append(foodlog)
 
         except (ValueError, TypeError):
             return Response({'error': 'Invalid timestamp format in one of the entries'}, status=status.HTTP_400_BAD_REQUEST)
-        
-    FoodLog.objects.bulk_create(created_foodlogs)
+
+    try:
+        # Bulk create all foodlog entries
+        FoodLog.objects.bulk_create(created_foodlogs, ignore_conflicts=True)
+    except Exception as e:
+        print('Error: ', e)
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
     return Response({"message" : "Logs created successfully!!"}, status=status.HTTP_201_CREATED)
 
