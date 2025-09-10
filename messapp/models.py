@@ -30,6 +30,7 @@ class FoodLog(models.Model):
         ('lunch', 'Lunch'),
         ('snacks', 'Snacks'),
         ('dinner', 'Dinner'),
+        ('milk', 'Milk'),
     ]
 
     PERSON_CHOICES = [
@@ -57,6 +58,7 @@ class FoodMenu(models.Model):
         ('lunch', 'Lunch'),
         ('snacks', 'Snacks'),
         ('dinner', 'Dinner'),
+        ('milk', 'Milk'),
     ]
 
 
