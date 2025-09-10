@@ -1,4 +1,5 @@
 from django.urls import include, path
+from messapp.viewsets.foodlogs_viewset import FoodLogViewSet
 from messapp.viewsets.foodmenu_viewsets import FoodMenuViewSet
 from messapp.viewsets.mess_rebate_viewsets import MessRebateViewSet
 from messapp.viewsets.user_viewsets import UserViewSet
@@ -10,6 +11,7 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'foodmenu', FoodMenuViewSet)
 router.register(r'rebates', MessRebateViewSet)
+router.register(r'foodlogs', FoodLogViewSet)
 
 urlpatterns = [
     path('login/',views.login),
