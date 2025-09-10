@@ -44,6 +44,10 @@ class FoodLog(models.Model):
     food_category = models.CharField(max_length=50,choices=FOOD_CATEGORY_CHOICES)
     timestamp = models.DateTimeField()
 
+    # new fields
+    date = models.DateField(null=True, blank=True)
+    time = models.TimeField(null=True, blank=True)
+
     def __str__(self):
         field_values = []
         for field in self._meta.get_fields():
