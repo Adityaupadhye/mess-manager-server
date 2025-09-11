@@ -20,6 +20,6 @@ urlpatterns = [
     path('weekly/', views.getWeekdata),
     path('monthly/', views.getMontlyAverage),
     path('pie/', views.getDayData),
-    path('menu/', include(router.urls)),
+    # path('menu/', include(router.urls)),
     path('', include(router.urls))
 ]

@@ -22,8 +22,6 @@ class FoodLogViewSet(viewsets.ModelViewSet):
         except ValueError:
             return Response({'error': 'Invalid date format. Use YYYY-MM-DD.'}, status=400)
 
-        start_dt = make_aware(datetime.combine(date_obj, datetime.min.time()))
-        end_dt = start_dt + timedelta(days=1)
-        logs = FoodLog.objects.filter(timestamp__gte=start_dt, timestamp__lt=end_dt)
+        logs = FoodLog.objects.filter(date=date_obj)
         serializer = self.get_serializer(logs, many=True)
         return Response(serializer.data)
