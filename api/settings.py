@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+import logging
+import logging.config
+import time
+
 # Load .env file
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
@@ -35,6 +39,71 @@ ALLOWED_HOSTS = ['192.168.56.1','192.168.0.104','192.168.0.103', '127.0.0.1', 'l
 
 APPEND_SLASH = True
 # Application definition
+
+# Logging Configuration
+
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Make all logging timestamps use local time (IST)
+logging.Formatter.converter = time.localtime
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "verbose": {
+            # "format": "{levelname} {asctime} {name} {process:d} {thread:d} {message}",
+            'format': '%(levelname)s [%(asctime)s IST] [%(name)s] [%(pathname)s:%(lineno)d] %(message)s',
+            # "style": "{",
+        },
+        "simple": {"format": "{levelname} {message}", "style": "{"},
+        "json": {  # optional if you’re shipping logs
+            "format": '{{"time": "{asctime}", "level": "{levelname}", "name": "{name}", "message": "{message}"}}',
+            "style": "{",
+        },
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "django.log"),
+            "maxBytes": 10 * 1024 * 1024,  # 10MB
+            "backupCount": 5,
+            "formatter": "verbose",
+        },
+        "error_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "errors.log"),
+            "maxBytes": 10 * 1024 * 1024,
+            "backupCount": 5,
+            "level": "ERROR",
+            "formatter": "verbose",
+        },
+    },
+
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["error_file"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "": {  # root logger - captures all your custom app logs
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+        },
+    },
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -154,3 +223,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #CORS
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+
+# Timezone settings
+TIME_ZONE = 'Asia/Kolkata'
+USE_TZ = True
