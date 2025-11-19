@@ -10,6 +10,7 @@ from rest_framework import status
 from collections import defaultdict , OrderedDict
 from django.db.models import Avg
 from django.db.models.functions import TruncDate
+from django.contrib.auth.hashers import check_password
 
 @csrf_exempt 
 @api_view(['POST'])
@@ -66,20 +67,25 @@ def postData(request):
 @csrf_exempt 
 @api_view(['POST'])
 def login(request):
-    if not request.data.get('username') or not request.data.get('password'):
+
+    # obtain username and password from request
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if not username or not password:
         return Response({"error":"Either password or username not provided!!"},status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        user = User.objects.get(pk=request.data.get('username'))
+        user = User.objects.get(pk=username)
             
-        if user.password == request.data['password'] :
+        if check_password(password, user.password):
             serializer = UserSerializer(user)
-            return Response(serializer.data,status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else: 
-            return Response({'error':"Wrong Credentials!!"},status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error':"Wrong Credentials!!"}, status=status.HTTP_401_UNAUTHORIZED)
         
     except User.DoesNotExist:
-        return Response({"error":"User doesn't exists!!"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"User doesn't exists!!"}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def getUsers(request):
