@@ -7,6 +7,6 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['username', 'hostel', 'roll_no']
+    filterset_fields = ['username', 'hostel', 'roll_no', 'role']
 
     
