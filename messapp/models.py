@@ -76,7 +76,7 @@ class FoodMenu(models.Model):
 
     food_category = models.CharField(max_length=50,choices=FOOD_CATEGORY_CHOICES)
     date = models.DateField()
-    menu = models.CharField(max_length=150)
+    menu = models.CharField(max_length=500)
     food_wastage = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     class Meta:
