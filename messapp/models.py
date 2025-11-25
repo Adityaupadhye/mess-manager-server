@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.forms import ValidationError
+from django.contrib.auth.hashers import make_password
 
 class TimeStampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -23,6 +24,12 @@ class User(models.Model):
     hostel = models.CharField(max_length=50, blank=True, null=True)
     roll_no = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
+
+    def save(self, *args, **kwargs):
+        # Only hash if not already hashed
+        if self.password and not self.password.startswith('pbkdf2_'):
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
 class FoodLog(models.Model):
     FOOD_CATEGORY_CHOICES = [
