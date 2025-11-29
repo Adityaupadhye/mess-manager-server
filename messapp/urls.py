@@ -7,6 +7,7 @@ from . import views
 from django.conf import settings
 from rest_framework.routers import DefaultRouter
 
+
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'foodmenu', FoodMenuViewSet)
@@ -20,6 +21,8 @@ urlpatterns = [
     path('weekly/', views.getWeekdata),
     path('monthly/', views.getMontlyAverage),
     path('pie/', views.getDayData),
+    path('feedback/',views.sendFeedback),
+    path('rating/',views.sendRating),
     # path('menu/', include(router.urls)),
     path('', include(router.urls))
 ]

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FoodMenu, MessRebates, User,FoodLog
+from .models import FoodMenu, MessRebates, User,FoodLog,Feedback,Rating
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +26,17 @@ class MessRebateSerializer(serializers.ModelSerializer):
     class Meta:
         model=MessRebates 
         fields = '__all__'
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = ['id', 'feedback_text', 'date']
+        read_only_fields = ['id', 'date']
+
+
+class RatingSerializer(serializers.ModelSerializer):
+    stars = serializers.IntegerField(min_value=1, max_value=5)
+    class Meta:
+        model = Rating
+        fields = ['id', 'rating', 'timestamp']
+        read_only_fields = ['id', 'timestamp']

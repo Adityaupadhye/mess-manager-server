@@ -23,7 +23,7 @@ class User(models.Model):
     hostel = models.CharField(max_length=50, blank=True, null=True)
     roll_no = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
-    # created_time = models.DateTimeField.auto_now
+    # updated_time = models.DateTimeField(auto_now=True)
     profile_photo = models.ImageField(upload_to='profile_pics/',blank=True,null=True)
 
 class FoodLog(models.Model):
@@ -109,4 +109,13 @@ class MessRebates(TimeStampedModel):
             MaxValueValidator(15, message='Maximum Rebate days is 15')
         ]
     )
+
+class Feedback(models.Model):
+    feedback_text= models.TextField(max_length=500)
+    date=models.DateTimeField(auto_now_add=True)
+
+class Rating(models.Model):
+    rating= models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    timestamp = models.DateTimeField(auto_now_add=True)
+
 

@@ -4,12 +4,13 @@ from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, FoodLog
+from .models import User, FoodLog,Feedback,Rating
 from .serializers import UserSerializer, FoodLogSerializer
 from rest_framework import status
 from collections import defaultdict , OrderedDict
 from django.db.models import Avg
 from django.db.models.functions import TruncDate
+
 
 @csrf_exempt 
 @api_view(['POST'])
@@ -155,6 +156,37 @@ def getMontlyAverage(request):
     print(data)
     return Response({"data":data},status=status.HTTP_200_OK)
 
- 
+
+@api_view(['POST'])
+def sendFeedback(request):
+    text = request.data.get("feedback")
+    length = len(text)
+
+    if length == 0:
+        return Response({"error": "Field cannot be empty!!"}, status=status.HTTP_400_BAD_REQUEST)
+    elif length > 500:
+        return Response({"error": "Max character limit reached!"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    Feedback.objects.create(feedback_text=text)
+    return Response({"message": "Feedback submitted successfully!!"}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def sendRating(request):
+    rating = request.data.get("rating")
+
+    if rating is None:
+        return Response({"error": "Rating cannot be empty!!"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        rating = int(rating)
+        if rating < 1 or rating > 5:
+            raise ValueError
+    except ValueError:
+        return Response({"error": "Rating must be an integer between 1 and 5"}, status=status.HTTP_400_BAD_REQUEST)
+
+    Rating.objects.create(rating=rating)
+    return Response({"message": "Rating submitted successfully!!"}, status=status.HTTP_200_OK)
+
 
 

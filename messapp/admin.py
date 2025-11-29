@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FoodMenu, MessRebates, User,FoodLog
+from .models import FoodMenu, MessRebates, User,FoodLog,Feedback,Rating
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('name', 'hostel', 'roll_no', 'role')
@@ -9,3 +9,5 @@ admin.site.register(User, UserAdmin)
 admin.site.register(FoodLog)
 admin.site.register(FoodMenu)
 admin.site.register(MessRebates)
+admin.site.register(Feedback)
+admin.site.register(Rating)
