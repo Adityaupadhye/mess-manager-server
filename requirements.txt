@@ -11,3 +11,6 @@ django-filter
 cryptography
 django-crontab
 python-dotenv
+pillow
+pandas
+openpyxl

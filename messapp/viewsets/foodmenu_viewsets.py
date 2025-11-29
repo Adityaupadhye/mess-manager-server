@@ -12,7 +12,8 @@ from datetime import timedelta, datetime
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 
-
+#for parsing the .xlsx file to JSON format
+from messapp.utils.parse_menu import parse_menu_csv
 
 class FoodMenuViewSet(viewsets.ModelViewSet):
     queryset = FoodMenu.objects.all()
@@ -128,3 +129,85 @@ class FoodMenuViewSet(viewsets.ModelViewSet):
             "error": None
         }, status=status.HTTP_200_OK)
     
+
+    #uploading menu by .xlsx file
+    @action(detail=False,methods=['post','put'])
+    def uploadbulkmenu(self,request):
+        print("inside bulk menu")
+        csv_file = request.FILES.get("file")
+        if not csv_file:
+            return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save uploaded file temporarily
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
+            for chunk in csv_file.chunks():
+                tmp.write(chunk)
+            tmp_path = tmp.name
+
+        # Parse the Excel
+        weekly_data = parse_menu_csv(tmp_path)
+        # Save data into DB
+        try: 
+            for entry in weekly_data:
+                print(entry,'\n')
+                FoodMenu.objects.update_or_create(
+                    date=entry['date'],
+                    food_category=entry['meal_type'],
+                    defaults={
+                        "menu": entry['items']   # <-- FIXED
+                    }
+                )
+            return Response({"message": "Menu uploaded successfully"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"message":str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+    MEALS = ["breakfast", "lunch", "snacks", "dinner", "milk"]
+
+    @action(detail=False, methods=['get'])
+    def weekly_menu(self, request):
+        """
+        GET /foodmenu/weekly_menu/?start=2025-11-17
+        If no start date given → choose Monday of current week
+        """
+
+
+        today = datetime.today().date()
+        start_date = today - timedelta(days=today.weekday())  # get current Monday
+
+        # Create an ordered week: Mon → Sun
+        dates = [(start_date + timedelta(days=i)) for i in range(7)]
+
+        # Fetching all menu items for this week
+        q = FoodMenu.objects.filter(date__in=dates).order_by("date", "food_category")
+
+        result = []
+        WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        date_to_day = {}
+
+        for i, dt in enumerate(dates):
+            day = WEEKDAYS[i]
+            date_to_day[dt] = day
+
+            result.append({
+                "day": day,
+                "date": dt.isoformat(),
+                "breakfast": [],
+                "lunch": [],
+                "snacks": [],
+                "dinner": [],
+            })
+
+        result_map = {entry["day"]: entry for entry in result}
+
+        for row in q:
+            day_name = date_to_day[row.date]
+            result_map[day_name][row.food_category] = row.menu
+
+        return Response(result, status=200)
+
+
+
+        

@@ -23,6 +23,8 @@ class User(models.Model):
     hostel = models.CharField(max_length=50, blank=True, null=True)
     roll_no = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
+    # created_time = models.DateTimeField.auto_now
+    profile_photo = models.ImageField(upload_to='profile_pics/',blank=True,null=True)
 
 class FoodLog(models.Model):
     FOOD_CATEGORY_CHOICES = [
@@ -76,7 +78,7 @@ class FoodMenu(models.Model):
 
     food_category = models.CharField(max_length=50,choices=FOOD_CATEGORY_CHOICES)
     date = models.DateField()
-    menu = models.CharField(max_length=150)
+    menu = models.JSONField() #Added JSON field instead of text field for proper formatting.
     food_wastage = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     class Meta:

@@ -25,3 +25,5 @@ class FoodLogViewSet(viewsets.ModelViewSet):
         logs = FoodLog.objects.filter(date=date_obj)
         serializer = self.get_serializer(logs, many=True)
         return Response(serializer.data)
+
+
